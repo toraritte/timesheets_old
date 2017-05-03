@@ -1,0 +1,49 @@
+<p>Hi <%= first_name(@user.name) %>, your timesheet is populated based on your regular hours that you provided when you signed up. These are: <%= @user.regular_hrs %> </p>
+
+<%# TODO: would you like to change your regular hours? permanently or only for this time %>
+
+<%# TODO: add client-side validation %>
+<%#       For starters: %>
+<%#       * a daily workday sum should be 8 hours %>
+<%#       * if an other (i.e., time-off) is selected, zero out the am-pm inputs %>
+<%#       * return to first item here: if other is not 8 hours and am-pm values are entered %>
+<%#         the daily value shouldn't exceed 8 hours %>
+
+<%= form_for @conn, timesheet_path(@conn, :create), [method: "post", as: :ts], fn f -> %>
+
+  <%= hidden_input(f,  :name,          value: @user.name) %>
+  <%= hidden_input(f,  :title,         value: @user.title) %>
+  <%= hidden_input(f,  :department,    value: @user.department) %>
+  <%= hidden_input(f,  :pay_date,      value: @pdate.pay_date) %>
+  <%= hidden_input(f,  :due_date,      value: @pdate.due_date) %>
+  <%= hidden_input(f,  :period_end,    value: @pdate.period_end) %>
+  <%= hidden_input(f,  :period_start,  value: @pdate.period_start) %>
+  <%= for p <- @pdate.period_dates do %>
+    <% {regular_hrs, select_opts, others_opts} = special_day_attributes(p, @user.regular_hrs) %>
+
+    <fieldset>
+      <legend><%= p.pretty_date %></legend>
+
+      <fieldset>
+        <legend>Others</legend>
+        <span>
+          <%# <%= label(f, create_id("others", p), "Please select one or leave as it is") %1> %>
+          <%= select(f, create_id("others", p), others(), select_opts) %>
+          <%= text_input(f, create_id("others_time", p), others_opts) %>
+        </span>
+      </fieldset>
+
+      <%# TODO: time format validation (e.g., 8:9, 7:129 etc) %>
+      <%= for {id_str, time} <- format_regular_hrs(regular_hrs) do %>
+
+        <span>
+          <%= label(f, create_id(id_str, p), "#{humanize_time(id_str)}") %>
+          <%= text_input(f, create_id(id_str, p), [value: time]) %>
+        </span>
+
+      <% end %>
+    </fieldset>
+
+  <% end %>
+  <%= submit "Submit" %>
+<% end %>

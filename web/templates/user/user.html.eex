@@ -1,0 +1,24 @@
+<%# TODO: add validation for required fields (but where? here, setup controller or user schema?) %>
+<%= form_for @changeset, user_path(@conn, :create),[multipart: true], fn f -> %>
+  <div>
+    <%= label(f, :name, "Full name:") %>
+    <%= text_input(f, :name) %>
+  </div>
+  <div>
+    <%= label(f, :title, "Title:") %>
+    <%= text_input(f, :title) %>
+  </div>
+  <div>
+    <%= label(f,  :department, "Please select your department:") %>
+    <%= select(f, :department, @departments) %>
+  </div>
+  <div>
+    <%= label(f, :regular_hrs, "What are your regular hours? Please provide a comma-separated list such as \"7:45,11:45,12:45,5:45\"") %>
+    <%= text_input(f, :regular_hrs) %>
+  </div>
+  <div>
+    <%= label(f, :signature, "Please upload your signature:") %>
+    <%= file_input(f, :signature) %>
+  </div>
+  <%= submit "Submit" %>
+<% end %>

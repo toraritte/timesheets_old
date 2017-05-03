@@ -1,0 +1,44 @@
+# for future reference to obfuscation best practices
+  i |> (&-/2).(offset) # =:= i-offset (...)
+  |> calculate_2017_date()
+  |> map_to_mdy
+
+# Keeping this for the list-cycling line only
+        defp calculate_date(d, months \\ Enum.to_list(1..12), year \\ 1900, month \\ 1) do
+        [current_month|rest] = months
+        new_months = Enum.reverse([current_month|Enum.reverse(rest)])
+
+# create functions dynamically with a macro that uses
+# a recursive helper module
+defmodule A do
+  defmodule B do
+    def lofa(5, acc) do
+      q =
+        quote do
+          def vmi(unquote(5)), do: unquote(5)*unquote(5)
+        end
+      unwrapper([q|acc])
+    end
+    def lofa(i, acc) do
+      q =
+        quote do
+          def vmi(unquote(i)), do: unquote(i)*unquote(i)
+        end
+      lofa(i+1, [q|acc])
+    end
+
+    def unwrapper(list) do
+      for l <- list, do: l
+    end
+  end
+  defmacro make_vmi(i) do
+    B.lofa(i, [])
+  end
+end
+
+# from payroll_date.ex where map_date = %{year: y, month: m, day: d}
+day_of_week =
+  map_date
+  |> Map.values
+  |> (fn [d,m,y] -> [y,m,d] end).()
+  |> (&Kernel.apply(Calendar.ISO, :day_of_week, &1)).()

@@ -1,0 +1,10 @@
+<%# TODO: Challenge: make site dynamic (select name that triggers timesheet %>
+<%#                  form to load) without making it less accessible %>
+<%= link "First time? Please click here.", to: user_path(@conn, :new) %>
+<%= form_for @conn, page_path(@conn, :index), [method: "get", as: :ts], fn f -> %>
+  <div>
+    <%= label(f,  :id, "Please select your name:") %>
+    <%= select(f, :id, @select_users, prompt: "Select your name") %>
+  </div>
+  <%= submit "Submit" %>
+<% end %>
